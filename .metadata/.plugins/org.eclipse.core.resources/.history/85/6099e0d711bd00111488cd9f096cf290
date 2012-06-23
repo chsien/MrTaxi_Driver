@@ -148,7 +148,7 @@ public class OnStateActivity extends MapActivity implements Callback{
         
         
         /*HELLO*/
-        /**HHHHHHHHHHHHHHHHHHHH**/
+        /*HELLO WORLD*/
         
         /*
         dialog_catch = new AlertDialog.Builder(this)
