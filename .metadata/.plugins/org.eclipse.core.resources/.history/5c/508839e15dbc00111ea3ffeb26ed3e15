@@ -1,0 +1,169 @@
+package com.mrtaxi.net.implement;
+
+import java.io.IOException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import com.mrtaxi.driver.R;
+import com.mrtaxi.net.core.asycTask_todo;
+import com.mrtaxi.net.core.netMission;
+
+public class RTPshackHand extends netMission{
+	private final String Server= "http://140.119.191.80:1337";
+	private final String routeActionOn = "/on/";
+	private final String routeActionOff = "/off/";
+	
+	public String RTP_SVR_host;
+	public String RTP_SVR_port;
+	
+	public void actionOn( final Context masterActivityCTX,  final asycTask_todo asycTask_todoList)
+	{
+		//link master activity which called this method
+		final FrameLayout baseLayout = (FrameLayout)((Activity) masterActivityCTX).findViewById(R.id.baseLayout);
+		
+		//generate a new freezelayout in
+		final FrameLayout freezeLayout = getFreezeLayout(masterActivityCTX);
+		
+		class asyncTransmit extends unimplementAsyncTransmit {
+			
+			JSONObject json = null;
+			
+			@Override
+			protected Void doInBackground(Void... arg0) {				
+				
+				//PROCESS YOUR DATA IN BACKGROUND
+				try {
+					json = new JSONObject(httpPostImplement(Server+routeActionOn, "{ \"ID\" : \"12346\" }"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+								
+				return null;
+			}
+			
+			@Override
+			protected void onPreExecute() {
+			
+				//before initializing Background Task, lock the screen
+				baseLayout.addView(freezeLayout);
+									
+			}
+			
+			@Override
+			protected void onPostExecute(Void v) {			
+			
+				try {
+					if(json != null)
+					{
+						if(json.getString("status").equals("duplicateID") && json != null)
+						{
+							Toast.makeText(masterActivityCTX, "ID ", Toast.LENGTH_SHORT).show();
+						}
+						if(json.getString("status").equals("OK") && json != null)
+						{
+							asycTask_todoList.onPostExecute(json.getString("RTP_SVR_IP"), Integer.toString(json.getInt("RTP_SVR_Port")));
+						}
+					}
+					else
+					{
+						Toast.makeText(masterActivityCTX, "網路連線失敗", Toast.LENGTH_SHORT).show();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+							
+				//after Background Task complete, free the screen
+				baseLayout.removeView(freezeLayout);
+				
+				//after Background Task complete, Do something which assigned by master activity
+				//asycTask_todoList.onPostExecute();
+			
+				//do garbege collection to avoid leak
+				System.gc();
+			}
+			
+		}
+		
+		asyncTransmit newTask = new asyncTransmit();			
+		newTask.execute();
+	}
+	
+	public void actionOff( final Context masterActivityCTX,  final asycTask_todo asycTask_todoList)
+	{
+		//link master activity which called this method
+		final FrameLayout baseLayout = (FrameLayout)((Activity) masterActivityCTX).findViewById(R.id.baseLayout);
+		
+		//generate a new freezelayout in
+		final FrameLayout freezeLayout = getFreezeLayout(masterActivityCTX);
+		
+		class asyncTransmit extends unimplementAsyncTransmit {
+			
+			JSONObject json = null;
+			
+			@Override
+			protected Void doInBackground(Void... arg0) {
+				
+				//PROCESS YOUR DATA IN BACKGROUND
+				try {
+					json = new JSONObject(httpPostImplement(Server+routeActionOff, "{ \"ID\" : \"12346\" }"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+								
+				return null;
+			}
+			
+			@Override
+			protected void onPreExecute() {
+			
+				//before initializing Background Task, lock the screen
+				baseLayout.addView(freezeLayout);
+									
+			}
+			
+			@Override
+			protected void onPostExecute(Void v) {
+				
+				try {
+					if(json.getString("status").equals("OK") && json != null)
+					{
+						asycTask_todoList.onPostExecute();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//after Background Task complete, free the screen
+				baseLayout.removeView(freezeLayout);
+				
+				//after Background Task complete, Do something which assigned by master activity
+				//asycTask_todoList.onPostExecute();
+			
+				//do garbege collection to avoid leak
+				System.gc();
+			}
+			
+		}
+		
+		asyncTransmit newTask = new asyncTransmit();			
+		newTask.execute();
+	}
+		
+}

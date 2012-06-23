@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/baseLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:background="#ffe5e5e5">
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp"
+	        android:layout_marginBottom="20dp"
+	        android:background="#ffb2b2b2"
+	        android:orientation="vertical" >
+	
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dp"
+	            android:layout_marginRight="10dp"
+	            android:layout_marginTop="10dp"
+	            android:layout_marginBottom="10dp"
+	            android:gravity="center"
+	            android:layout_weight="0" >
+	
+	            <TextView
+	                android:id="@+id/textView_name"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="5dp"
+	                android:text="本趟載客資訊"
+	                android:textSize="30dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+	        </LinearLayout>
+	
+		</LinearLayout>
+		
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="10dp"
+	            android:layout_marginLeft="10dp"
+	            android:layout_marginRight="10dp"
+	            android:layout_marginTop="5dp" >
+	
+	            <TextView
+	                android:id="@+id/textView_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="5dp"
+	                android:text="里程數:"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	            <TextView
+	                android:id="@+id/editText_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:inputType="phone"
+	                android:text="XXXXXXXkm" 
+	                android:gravity="right"
+	                android:textAppearance="?android:attr/textAppearanceLarge"/>
+	        </LinearLayout>
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="10dp"
+	            android:layout_marginLeft="10dp"
+	            android:layout_marginRight="10dp"
+	            android:layout_marginTop="5dp" >
+	
+	            <TextView
+	                android:id="@+id/textView_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="5dp"
+	                android:text="時間"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	            <TextView
+	                android:id="@+id/editText_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:inputType="phone"
+	                android:text="XX:XX" 
+	                android:gravity="right"
+	                android:textAppearance="?android:attr/textAppearanceLarge"/>
+	        </LinearLayout>
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="10dp"
+	            android:layout_marginLeft="10dp"
+	            android:layout_marginRight="10dp"
+	            android:layout_marginTop="5dp" >
+	
+	            <TextView
+	                android:id="@+id/textView_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="5dp"
+	                android:text="金額:"
+	                android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	            <TextView
+	                android:id="@+id/editText_phone"
+	                android:textColor="#ff000000"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:inputType="phone"
+	                android:text="$XXXXXXX" 
+	                android:gravity="right"
+	                android:textAppearance="?android:attr/textAppearanceLarge"/>
+	        </LinearLayout>
+	        <Button 
+	            android:id="@+id/button1" 
+	            android:layout_width="match_parent" 
+	            android:layout_height="wrap_content" 
+	            android:layout_gravity="bottom"
+	            android:text="確定"/>
+
+	
+
+	    </LinearLayout>
+	
+
+</FrameLayout>

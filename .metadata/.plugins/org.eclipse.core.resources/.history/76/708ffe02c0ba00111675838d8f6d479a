@@ -1,0 +1,7 @@
+package com.MrTaxi.core;
+
+import com.google.android.maps.Overlay;
+
+public class Polyline extends Overlay {
+
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MrTaxiDriverActivity!</string>
+    <string name="app_name">MrTaxiDriver</string>
+
+	<string name="register_textViewContent_photoTip">請點擊上方圖片修改</string>
+    <string name="register_textViewContent_name">司機姓名</string>
+    <string name="register_textViewContent_phone">電話號碼</string>
+    <string name="textViewContent_license">車牌號碼</string>
+    <string name="textViewContent_driverlicense">駕照號碼</string>
+    <string name="register_buttonContent_request">開始使用</string>    
+    
+	<string name="main_textViewContent_standaloneTip">無網路連接</string>
+	<string name="main_textViewContent_copyright">版權所有 © 2012 NCCU CS Mr.Taxi</string>
+	
+	<string name="main_textViewContent_tab1">TAB1</string>
+	<string name="main_textViewContent_tab2">TAB2</string>
+</resources>

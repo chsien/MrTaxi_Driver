@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/baseLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+
+
+    <SurfaceView
+        android:id="@+id/surfaceView_camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.maps.MapView
+    		android:id="@+id/mapview"
+            android:layout_width="fill_parent"
+            android:layout_height="20dp"
+            android:apiKey="0m6XgSdwN8-Mq_Pl36YfJ8vo5mX740PruAZv8DQ"
+            android:clickable="true"
+            android:focusable="true"
+            />
+
+
+    <ToggleButton
+        android:id="@+id/toggleButton_upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="ToggleButton" />
+    
+    <LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:gravity="bottom"
+	    android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/openmap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="路徑規劃" />
+
+        <Button
+            android:id="@+id/state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="乘客上車" />
+        
+    </LinearLayout>
+    
+</FrameLayout>

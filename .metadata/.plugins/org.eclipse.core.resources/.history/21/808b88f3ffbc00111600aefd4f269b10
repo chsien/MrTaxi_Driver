@@ -1,0 +1,300 @@
+package com.MrTaxi.Driver;
+
+import java.io.IOException;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
+import android.net.LocalServerSocket;
+import android.net.LocalSocket;
+import android.net.LocalSocketAddress;
+import android.os.Bundle;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ToggleButton;
+
+import com.MrTaxi.core.cameraHandler;
+import com.MrTaxi.net.core.asycTask_todo;
+import com.MrTaxi.net.implement.RTPshackHand;
+import com.MrTaxi.net.implement.RTPthread;
+
+public class VideoRecordingActivity extends Activity implements Callback{
+    	
+	private ToggleButton toggleButton_upload;
+	private SurfaceHolder surfaceHolder;
+	private SurfaceView surfaceView;
+	private boolean surfaceView_state;	
+	
+	private cameraHandler camera_handler;
+	
+	private MediaRecorder mediaRecorder;
+	
+	private RTPthread RTPthreadHandler;
+	private RTPshackHand RTPshackHandHandler;
+	
+	private LocalSocket receiver, sender;  
+	private LocalServerSocket lss;
+	
+	private Boolean isRecording = false;
+	
+	private Button openmap;
+	private Button state;
+    
+	
+	Dialog dialog_catch;
+	android.content.DialogInterface.OnClickListener dialogOnClickListener_catch = new android.content.DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int response) {
+			switch(response)
+			{
+				case Dialog.BUTTON_POSITIVE:
+				{
+					state.setText("結束載客");	
+					state.setOnClickListener(new Button.OnClickListener(){
+			        	public void onClick(View v) {
+			        		dialog_finish.show();    		
+			        	}
+			        });
+					break;
+				}
+			}
+		}
+	};
+	
+	Dialog dialog_finish;
+	android.content.DialogInterface.OnClickListener dialogOnClickListener_finish = new android.content.DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int response) {
+			switch(response)
+			{
+				case Dialog.BUTTON_POSITIVE:
+				{
+					state.setText("乘客上車");	
+					Intent it=new Intent();
+	            	it.setClass(VideoRecordingActivity.this, sumActivity.class);
+	            	startActivity(it); 
+	            	VideoRecordingActivity.this.finish();
+					break;
+				}
+			}
+		}
+	};
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	
+    	// full screen
+    	getWindow().setFlags(
+    	    WindowManager.LayoutParams.FLAG_FULLSCREEN,
+    	    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    	
+    	// keep screen on
+    	getWindow().setFlags(
+    			WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, 
+    			WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    	
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.tab2);
+        
+    	surfaceView = (SurfaceView) findViewById(R.id.surfaceView_camera);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); 
+        
+        openmap=(Button)findViewById(R.id.openmap);
+        openmap.setOnClickListener(new Button.OnClickListener(){
+        	public void onClick(View v) {
+            	Intent it=new Intent();
+            	it.setClass(VideoRecordingActivity.this, tab1_Activity.class);
+            	startActivity(it);        		
+        	}
+        });
+        
+        
+        
+        dialog_catch = new AlertDialog.Builder(this)
+        .setTitle("乘客已經上車?")
+        .setPositiveButton("確定", dialogOnClickListener_catch)
+        .setNegativeButton("取消", dialogOnClickListener_catch).create(); 
+        
+        dialog_finish = new AlertDialog.Builder(this)
+        .setTitle("結束載客?")
+        .setPositiveButton("確定", dialogOnClickListener_finish)
+        .setNegativeButton("取消", dialogOnClickListener_finish).create(); 
+        
+        state=(Button)findViewById(R.id.state);
+        state.setOnClickListener(new Button.OnClickListener(){
+        	public void onClick(View v) {
+        		dialog_catch.show();    		
+        	}
+        });
+        
+        toggleButton_upload = (ToggleButton)findViewById(R.id.toggleButton_upload);
+        toggleButton_upload.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        {
+
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				
+				
+                if ( arg1 )
+                {
+                	if(isRecording == true)
+                		return;
+                	
+                	toggleButton_upload.setChecked(false);
+                	
+                	
+                	RTPshackHandHandler.actionOn( VideoRecordingActivity.this, new asycTask_todo(){
+                		
+                		public void onPostExecute(String HOST_IP, String HOST_PORT) {
+                        	camera_handler.stopPreview();
+                        	camera_handler.setUnlock();
+                        	mediaRecorder_initial();
+                        	RTPthreadHandler.start(receiver, HOST_IP, HOST_PORT);
+                        	isRecording = true;
+                        	
+                        	toggleButton_upload.setChecked(true);
+                		}
+                	});
+                	
+                }
+                else
+                {
+                	if(isRecording == false)
+                		return;
+                	                	
+                	toggleButton_upload.setChecked(true);
+                	
+                	
+                	RTPshackHandHandler.actionOff( VideoRecordingActivity.this, new asycTask_todo(){
+                		
+                		public void onPostExecute() {
+                        	RTPthreadHandler.stop();
+                        	mediaRecorder_terminate();
+                        	camera_handler.setLock();
+                        	camera_handler.terminate();
+                        	
+                        	camera_handler.initial();
+                        	camera_handler.startPreview();
+                        	                        	
+                        	isRecording = false;
+                        	toggleButton_upload.setChecked(false);
+                        	
+                        	if(!surfaceView_state)
+                        	{
+                        		camera_handler.stopPreview();
+                        		camera_handler.terminate();
+                        	}
+                        	System.gc();
+                		}
+                	});
+
+                }
+			}        	
+        });        
+        
+        camera_handler = new cameraHandler(surfaceHolder);
+        RTPthreadHandler =  new RTPthread();
+        RTPshackHandHandler = new RTPshackHand();
+        
+
+		
+        toggleButton_upload.setChecked(true);
+        
+        //toggleButton_upload.setChecked(false);
+    }
+    
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    	
+    	
+    }
+    public void onStop()
+    {
+    	super.onStop();
+    	if(isRecording)
+    		toggleButton_upload.setChecked(false);
+    	else
+    	{
+    		camera_handler.stopPreview();
+    		camera_handler.terminate();
+    	}
+    	 surfaceView_state = false;
+    }
+	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+
+	}
+
+	public void surfaceCreated(SurfaceHolder arg0) {
+		camera_handler.initial();
+		camera_handler.startPreview();	
+		surfaceView_state = true;
+	}
+
+	public void surfaceDestroyed(SurfaceHolder arg0) {
+	
+
+	}
+	
+	public void mediaRecorder_initial()
+	{	
+		receiver = new LocalSocket();  
+		try {  
+		    lss = new LocalServerSocket("MainRecorder");  
+		    receiver.connect(new LocalSocketAddress("MainRecorder"));  
+		    receiver.setReceiveBufferSize(500000);  
+		    receiver.setSendBufferSize(500000);  
+		    sender = lss.accept();  
+		    sender.setReceiveBufferSize(500000);  
+		    sender.setSendBufferSize(500000);  
+		} catch (IOException e) {  
+			e.printStackTrace();
+		}
+		
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setCamera(camera_handler.getCamera());        
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+       
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        
+        //mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        mediaRecorder.setVideoSize(128, 96);
+        mediaRecorder.setVideoFrameRate( 5 );
+        
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);        
+        
+        mediaRecorder.setPreviewDisplay(surfaceHolder.getSurface());
+        mediaRecorder.setOutputFile(sender.getFileDescriptor());       
+       
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+	}
+	public void mediaRecorder_terminate()
+	{
+		
+        mediaRecorder.release();
+        mediaRecorder = null;
+        
+	    try {  
+	        lss.close();  
+	        receiver.close();  
+	        sender.close();  
+	    } catch (IOException e) {  
+	        e.printStackTrace();  
+	    }
+	}
+}

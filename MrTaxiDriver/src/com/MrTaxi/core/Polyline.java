@@ -1,0 +1,87 @@
+package com.MrTaxi.core;
+
+import java.util.List;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.Projection;
+
+/**
+ * Goolge地图之Polyline实现Overlay 以图层形式存在.
+ * MyLocationOverlay:定位当前位置的图层
+ * ItemizedOverlay:图层的基类
+ * OverlayItem:图层的项
+ * 
+ * 
+ * @author longgangbai
+ */
+public class Polyline extends Overlay {
+	List<GeoPoint> points;
+	Paint paint;
+	Paint paint2;
+
+	/**
+	 * 构造函数，使用GeoPoint List构造Polyline
+	 * 
+	 * @param points
+	 *            GeoPoint点List
+	 */
+	public Polyline(List<GeoPoint> points) {
+		this.points = points;
+		paint = new Paint();
+		paint.setColor(Color.GRAY);
+		paint.setAlpha(255);
+		paint.setAntiAlias(true);
+		paint.setStyle(Paint.Style.FILL_AND_STROKE);
+		paint.setStrokeWidth(10);
+		
+		
+		paint2 = new Paint();
+		paint2.setColor(Color.RED);
+		paint2.setAlpha(255);
+		paint2.setAntiAlias(true);
+		paint2.setStyle(Paint.Style.FILL);
+		paint2.setStrokeWidth(0);
+	}
+
+	/**
+	 * 使用GeoPoint点List和Paint对象来构造Polyline
+	 * 
+	 * @param points
+	 *            GeoPoint点List，所有的拐点
+	 * @param paint
+	 *            Paint对象，用来控制划线样式
+	 */
+	public Polyline(List<GeoPoint> points, Paint paint) {
+		this.points = points;
+		this.paint = paint;
+	}
+
+
+	/**
+	 * 真正将线绘制出来 只需将线绘制到canvas上即可，主要是要转换经纬度到屏幕坐标
+	 */
+	@Override
+	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+		if (!shadow) {// 不是绘制shadow层
+			Projection projection = mapView.getProjection();
+			if (points != null) {
+				if (points.size() >= 2) {
+					Point start = projection.toPixels(points.get(0), null);// 需要转换坐标
+					for (int i = 1; i < points.size(); i++) {
+						Point end = projection.toPixels(points.get(i), null);
+						canvas.drawLine(start.x, start.y, end.x, end.y, paint);// 绘制到canvas上即可
+						canvas.drawCircle(start.x, start.y, 5, paint2);
+						start = end;
+					}
+				}
+			}
+		}
+	}
+}
