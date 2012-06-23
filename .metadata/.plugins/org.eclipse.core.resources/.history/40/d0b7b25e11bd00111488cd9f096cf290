@@ -146,9 +146,6 @@ public class OnStateActivity extends MapActivity implements Callback{
         });
         openmap.setText("顯示行車資訊");
         
-        
-        /*HELLO*/
-        
         /*
         dialog_catch = new AlertDialog.Builder(this)
         .setTitle("乘客已經上車?")
